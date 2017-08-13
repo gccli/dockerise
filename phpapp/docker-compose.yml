@@ -1,0 +1,25 @@
+version: '2'
+services:
+  nginx:
+    image: "nginx"
+    links:
+      - php-fpm
+    ports:
+      - "${EXTERNAL_PORT}:80"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./webapp/app:/opt/app
+  php-fpm:
+    build:
+      context: webapp
+    volumes:
+      - ./webapp/app:/opt/app
+    depends_on:
+      - mysql
+  mysql:
+    image: "mysql"
+    volumes:
+      - ./webapp/app/basic/sql:/sql
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_DATABASE: "${MYSQL_DATABASE}"
